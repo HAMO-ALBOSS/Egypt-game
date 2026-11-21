@@ -110,6 +110,17 @@ body.incar #bTalk{display:none!important}
 #settings input[type=range]{width:100%}
 #settings .stbtns{display:flex;gap:8px;margin-top:8px}#settings .stbtns button{flex:1;background:var(--accent);color:#000;border:0;border-radius:10px;padding:9px;font-weight:700;font-family:var(--body)}
 #settings.edit .opts{display:none}
+#svHud{pointer-events:auto;font-family:var(--display);font-size:16px;background:var(--panel);color:#8be3a5;border:1px solid var(--line);padding:4px 12px;border-radius:14px;margin-top:4px}
+#errbar{position:fixed;bottom:0;left:0;right:0;background:#7a0b0bdd;color:#fff;font:12px monospace;padding:4px 8px;z-index:60;direction:ltr;max-height:30vh;overflow:auto}
+#bankui{z-index:25}
+#bkbox{background:#0b1410;border:2px solid #2fbf6b;border-radius:16px;padding:16px;width:min(360px,94vw);max-height:90vh;overflow:auto;direction:rtl;color:#fff}
+#bkbox h3{font-family:var(--display);font-weight:400;color:#35d07f;margin:0 0 8px;font-size:22px}
+#bkbox input{width:100%;box-sizing:border-box;margin:5px 0;padding:10px;border-radius:8px;border:1px solid #2a3a30;background:#101a15;color:#fff;font-size:15px}
+.bkb{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.bkb button{flex:1;min-width:30%;background:#2fbf6b;color:#000;border:0;border-radius:8px;padding:9px;font-weight:700;font-family:var(--body)}
+.bkb button.alt{background:#2a313b;color:#fff}.bn{font-size:13px;color:#ffd23a;min-height:18px}
+.bkrow{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid #1c2a22}
+.bkcard{background:linear-gradient(135deg,#1a3fa8,#0c1c5c);border-radius:12px;padding:12px;margin:8px 0;font-family:monospace;direction:ltr;text-align:left}
+.bkcard b{float:right;font-style:italic;font-size:20px}
 #fcBtn{pointer-events:auto;font-family:var(--display);font-size:16px;background:var(--panel);color:#7ad7ff;border:1px solid var(--line);padding:4px 12px;border-radius:14px;margin-top:4px}
 #fx{position:fixed;inset:0;box-shadow:inset 0 0 140px #3aa0ffaa;opacity:0;pointer-events:none;transition:opacity .3s;z-index:5}
 #fuel{position:absolute;bottom:calc(24px + env(safe-area-inset-bottom,0px));left:calc(50% + 85px);font-family:var(--display);font-size:20px;text-shadow:0 2px 0 #000a}
@@ -132,7 +143,7 @@ body.incar #bTalk{display:none!important}
 <div id="vig"></div><div id="hurt"></div><div id="speedfx"></div>
 <div id="hud">
   <div class="tl"><div id="money">ج.م 0</div><div id="region"></div><div id="clock">٩:٠٠ ص</div><div class="bar"><i id="hpbar"></i></div><div class="bar arm"><i id="arbar"></i></div><div class="bar food"><i id="fdbar" style="width:100%"></i></div></div>
-  <div class="tr"><canvas id="mini" width="300" height="300"></canvas><div id="stars">★★★★★</div><button id="phBtn">📱 تليفون (P)</button><button id="fcBtn">🎯 تركيز (G)</button><button id="stBtn">⚙️ إعدادات (O)</button></div>
+  <div class="tr"><canvas id="mini" width="300" height="300"></canvas><div id="stars">★★★★★</div><button id="phBtn">📱 تليفون (P)</button><button id="fcBtn">🎯 تركيز (G)</button><button id="stBtn">⚙️ إعدادات (O)</button><button id="svHud">💾 حفظ</button></div>
   <div class="br"><div id="wname"></div><div id="wammo"></div></div>
   <div id="task" hidden></div>
   <div id="cross"></div>
@@ -155,6 +166,7 @@ body.incar #bTalk{display:none!important}
 </div>
 
 <div id="fade"></div>
+<div id="errbar" hidden></div>
 <div id="settings" hidden><div class="sthead"><b>⚙️ الإعدادات</b><button id="stx">✕</button></div><div class="opts">
 <label>🔊 الصوت العام <input type="range" id="sVol" min="0" max="100"></label>
 <label>💥 المؤثرات (نار وانفجارات) <input type="range" id="sSfx" min="0" max="100"></label>
@@ -163,9 +175,13 @@ body.incar #bTalk{display:none!important}
 <label>🕹️ حجم عصا الحركة <input type="range" id="sSs" min="50" max="170"></label>
 <label>🎨 جودة الرسوميات (تتطبق بعد إعادة فتح اللعبة)<select id="sGfx"><option value="0">منخفضة (موبايل)</option><option value="1">متوسطة</option><option value="2">عالية</option></select></label>
 <label class="ck"><input type="checkbox" id="sTouch"> أزرار اللمس على الكمبيوتر</label></div>
+<div id="svInfo" style="font-size:12px;color:var(--dim);margin-top:6px"></div>
+<div class="stbtns"><button id="svBtn">💾 احفظ دلوقتي</button><button id="ldBtn">📂 حمّل</button></div>
+<div class="stbtns"><button id="exBtn">⬇ تصدير</button><button id="imBtn">⬆ استيراد</button><button id="dlBtn">🗑 مسح</button></div><input type="file" id="imFile" accept=".json,application/json" hidden>
 <div class="stbtns"><button id="sEdit">✋ تحريك الأزرار</button><button id="sReset">رجّع الافتراضي</button></div></div>
+<div class="modal" id="bankui" hidden><div id="bkbox"></div></div>
 <div class="modal" id="hw" hidden><div id="hwbox"></div></div>
-<div class="modal" id="phone" hidden><div id="ph"><div id="phtop"><span id="phtime"></span><span id="phmoney"></span><button id="phx">✕</button></div><div id="phbody"></div><div id="phtabs"><button data-t="map">🗺️ خريطة</button><button data-t="food">🍔 أكل</button><button data-t="svc">🛠️ خدمات</button><button data-t="gun">🔫 أسلحة</button><button data-t="trunk">🧳 شنطة</button><button data-t="prof">👤 ملفي</button><button data-t="go">🧭 سفر</button></div></div></div>
+<div class="modal" id="phone" hidden><div id="ph"><div id="phtop"><span id="phtime"></span><span id="phmoney"></span><button id="phx">✕</button></div><div id="phbody"></div><div id="phtabs"><button data-t="map">🗺️ خريطة</button><button data-t="food">🍔 أكل</button><button data-t="svc">🛠️ خدمات</button><button data-t="gun">🔫 أسلحة</button><button data-t="bank">🏦 البنك</button><button data-t="trunk">🧳 شنطة</button><button data-t="prof">👤 ملفي</button><button data-t="go">🧭 سفر</button></div></div></div>
 
 <div class="modal" id="start">
   <div class="card">
@@ -186,6 +202,7 @@ body.incar #bTalk{display:none!important}
     </div>
     <p>الفلوس بتيجي من اللي بتخلص عليه وبتلاقيها مرمية في الشوارع. المتجر عليه علامة صفراء كبيرة في وسط المدينة، وعلى الخريطة بعلامة سهم.</p>
     <p style="margin-top:14px"><button class="btn" id="goBtn">ابدأ اللعب</button></p>
+    <p><button class="btn alt" id="contBtn" hidden>▶ كمّل من آخر حفظ</button></p>
   </div>
 </div>
 
@@ -1268,7 +1285,7 @@ function interact(){
   const c=nearestCar(4.5);
   if(c){
     if(c.ai==='traffic'&&Math.abs(c.speed)>8){toast('العربية ماشية بسرعة');return;}
-    if(c.ai==='empty'&&!c.owned&&!c.hwOK&&!c.def.police){startHotwire(c);return;}
+    if(c.ai==='empty'&&!c.owned&&!c.hwOK&&!c.mission&&!c.def.police){startHotwire(c);return;}
     if(!c.owned)c.stolen=true;
     pl.car=c;c.ai='player';c.speed=c.speed||0;pl.h.g.visible=false;
     if(c.def.police)setWanted(Math.max(S.wanted,2));
@@ -1413,6 +1430,8 @@ const tCar={g:0,b:0,l:0,r:0,h:0};
 let mouseR=false,touchFire=false,touchRun=false,touchJump=false;
 const tStick={x:0,y:0};
 addEventListener('keydown',e=>{
+  if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)){if(e.code==='Escape'&&S.bankUI)bkClose();return;}
+  if(S.bankUI){if(e.code==='Escape')bkClose();return;}
   if(S.setOpen){if(e.code==='Escape'||e.code==='KeyO')toggleSettings();return;}
   if(S.phoneOpen){if(e.code==='Escape'||e.code==='KeyP')togglePhone();return;}
   if(S.shopOpen){if(e.code==='Escape'||e.code==='KeyE')closeShop();return;}
@@ -2144,6 +2163,10 @@ function phRender(){
     row('سترة واقية · ج.م 300','درع كامل',[{t:'اطلب',dis:S.money<300||S.armor>=100,f:()=>{S.money-=300;S.armor=100;toast('وصلتك السترة');}}]);
     row('تاكسي · ج.م 100','عربية تاكسي تستناك جنبك',[{t:'اطلب',dis:S.money<100||!!pl.car,f:()=>{S.money-=100;mkCar('taxi',pl.x+Math.sin(camYaw)*-7+4,pl.z+Math.cos(camYaw)*-7,0,'empty');toast('التاكسي وصل');}}]);
     row('واسطة تهدّي البوليس · ج.م '+(500*S.wanted),'تشيل النجوم',[{t:'ادفع',dis:S.wanted<1||S.money<500*S.wanted,f:()=>{S.money-=500*S.wanted;setWanted(0);}}]);
+  }else if(phTab==='bank'){
+    head('🏦 تطبيق بنك الشعب');
+    row(S.bank.reg?'حسابك: '+S.bank.u:'مفيش حساب','سجّل دخول بكلمة مرورك. الإيداع والسحب في الفرع أو الـ ATM.',[{t:S.bank.reg?'افتح التطبيق':'روح أي فرع',dis:!S.bank.reg,f:()=>bkOpen('app')}]);
+    row('الفروع','بنك الشعب في كل المحافظات، وماكينات ATM جنب الأماكن المهمة. شوفهم على الخريطة.',[]);
   }else if(phTab==='trunk'){
     head('شنطة العربية');
     const c=pl.car||nearestCar(6);
@@ -2223,7 +2246,7 @@ function updAssist(dt){
 $('prompt').addEventListener('pointerdown',e=>{e.stopPropagation();inp.act=true;});
 function travel(r){
   if(pl.car){toast('انزل من العربية الأول');return;}
-  S.money-=50;pl.x=rc[r.bi];pl.z=rc[Math.max(1,r.bj)];pl.y=0;camYaw=Math.PI;hudMoney();togglePhone();toast('وصلت '+r.name,2200);
+  S.money-=50;pl.x=rc[r.bi];pl.z=Math.max(96,rc[Math.max(1,r.bj)]);pl.y=0;camYaw=Math.PI;hudMoney();togglePhone();toast('وصلت '+r.name,2200);
 }
 // landmarks (visual + solid)
 {
@@ -2335,7 +2358,7 @@ function fly(r){
   if(pl.car){toast('انزل من العربية الأول');return;}
   S.money-=150;closeShop();hudMoney();
   const f=$('fade');f.style.transition='none';f.style.opacity=1;
-  pl.x=rc[r.bi];pl.z=rc[Math.max(1,r.bj)];pl.y=0;camYaw=Math.PI;
+  pl.x=rc[r.bi];pl.z=Math.max(96,rc[Math.max(1,r.bj)]);pl.y=0;camYaw=Math.PI;
   setTimeout(()=>{f.style.transition='opacity 1.4s';f.style.opacity=0;toast('✈️ الطيارة هبطت في '+r.name,2600);},600);
 }
 
@@ -2898,20 +2921,211 @@ function updGfx(dt){
 $('sGfx').value=GQ;
 $('sGfx').addEventListener('change',e=>{SET.gfx=+e.target.value;saveSet();toast('الجودة هتتطبق بعد إعادة فتح اللعبة',3200);});
 
+
+/* ---------- v11: error safety + save/load ---------- */
+let lastErr='';
+function gameErr(e,w){
+  const m=(e&&e.message?e.message:String(e))+(w?' @'+w:'');
+  try{console.error(e);}catch(x){}
+  if(m===lastErr)return;lastErr=m;
+  const b=$('errbar');b.hidden=false;b.textContent='⚠ '+m+' (دوس لإخفاء)';
+}
+$('errbar').addEventListener('click',()=>{$('errbar').hidden=true;});
+window.addEventListener('error',ev=>gameErr(ev.error||ev.message,'window'));
+window.addEventListener('unhandledrejection',ev=>gameErr(ev.reason,'promise'));
+const LG={x:pl.x,z:pl.z};
+function guard(){
+  if(!isFinite(pl.x)||!isFinite(pl.z)||!isFinite(pl.y)){pl.x=LG.x;pl.z=LG.z;pl.y=0;gameErr('إحداثيات اللاعب اتصلّحت','guard');}
+  else{LG.x=pl.x;LG.z=pl.z;}
+  const c=pl.car;
+  if(c){if(!isFinite(c.x)||!isFinite(c.z)){c.x=pl.x;c.z=pl.z;c.speed=0;}if(!isFinite(c.yaw))c.yaw=0;if(!isFinite(c.speed))c.speed=0;}
+}
+const HOOKS=[updFood,updAssist,updRegion,updAir,updCP,updRail,updExtra,updFuel,updPhys,updPol,updGfx];
+function runHooks(dt){for(const f of HOOKS){try{f(dt);}catch(e){gameErr(e,f.name);}}guard();}
+
+// حفظ وتحميل
+const SAVE_KEY='cairo_save_v1';
+function snapshot(){
+  const cs=cars.filter(c=>c.owned&&!c.wreck).map(c=>({t:c.type,x:c.x,z:c.z,y:c.yaw,f:c.fuel,tb:c.turbo,or:c.offroad,hp:c.hp,tr:c.trunk}));
+  const inCar=!!pl.car;
+  return {v:1,t:Date.now(),bank:S.bank,money:S.money,hp:S.hp,armor:S.armor,food:S.food,fat:S.fat,gymXp:S.gymXp,hasID:S.hasID,hasLic:S.hasLic,
+    own:S.own,ammo:S.ammo,cur:S.cur,houses:S.houses,club:S.club,jerry:S.jerry,decoder:S.decoder,dirty:S.dirty,fame:S.fame,kills:S.kills,
+    story:S.story,clock:S.clock,carsBought:S.carsBought,respawnId:(S.respawn&&S.respawn.id)||null,maxW,
+    pos:{x:pl.x+(inCar?3:0),z:pl.z},yaw:camYaw,cars:cs};
+}
+function readSave(){try{const r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+function fmtDate(t){try{return new Date(t).toLocaleString('ar-EG');}catch(e){return '';}}
+function saveGame(manual){
+  if(!S.started||S.dead){if(manual)toast('مينفعش تحفظ دلوقتي');return false;}
+  try{const d=snapshot();localStorage.setItem(SAVE_KEY,JSON.stringify(d));$('svInfo').textContent='آخر حفظ: '+fmtDate(d.t);if(manual)toast('💾 اتحفظ تقدمك',1800);return true;}
+  catch(e){gameErr(e,'save');if(manual)toast('الحفظ فشل');return false;}
+}
+function applySave(d){
+  Object.assign(S,{bank:d.bank?Object.assign(newBank(),d.bank,{lock:0}):newBank(),money:d.money||0,hp:Math.max(25,d.hp||100),armor:d.armor||0,food:d.food==null?100:d.food,fat:d.fat||0,gymXp:d.gymXp||0,hasID:!!d.hasID,hasLic:!!d.hasLic,
+    own:d.own||{fists:true,pistol:true},ammo:d.ammo||{},cur:d.cur||0,houses:d.houses||{},club:!!d.club,jerry:d.jerry||0,decoder:d.decoder||0,dirty:d.dirty||0,
+    fame:d.fame||0,kills:d.kills||0,story:d.story||{step:0},clock:d.clock==null?540:d.clock,carsBought:d.carsBought||0,dead:false,task:null});
+  maxW=d.maxW||0;
+  for(const p of places)if(S.houses[p.id]&&p.sign){setSign(p.sign,p.sp.own+' (بيتك)','#14532d','#e8ffe8');p.mark.material.color.setHex(0x52e08a);p.beam.material.color.setHex(0x52e08a);}
+  S.respawn=d.respawnId?(places.find(p=>p.id===d.respawnId)||null):null;
+  for(const c of cars.slice())if(c.owned){scene.remove(c.m);const i=cars.indexOf(c);if(i>=0)cars.splice(i,1);}
+  for(const k of(d.cars||[])){if(!DEFS[k.t])continue;const c=mkCar(k.t,k.x,k.z,k.y||0,'empty');c.owned=true;if(k.f!=null)c.fuel=k.f;c.turbo=k.tb;c.offroad=k.or;if(k.hp!=null)c.hp=k.hp;c.trunk=k.tr||{};}
+  pl.car=null;pl.h.g.visible=true;pl.x=d.pos.x;pl.z=Math.max(90,d.pos.z);pl.y=0;pl.yaw=Math.PI;camYaw=d.yaw==null?Math.PI:d.yaw;
+  pushOut(pl,.5);$('wasted').hidden=true;
+  setWanted(0);hudMoney();hudWeapon();
+}
+$('contBtn').addEventListener('click',()=>{const d=readSave();if(d){try{applySave(d);}catch(e){gameErr(e,'load');}}$('goBtn').click();});
+{const d=readSave();if(d){$('contBtn').hidden=false;$('contBtn').textContent='▶ كمّل من آخر حفظ ('+fmtDate(d.t)+')';$('svInfo').textContent='آخر حفظ: '+fmtDate(d.t);}}
+$('svBtn').addEventListener('click',()=>saveGame(true));
+$('svHud').addEventListener('click',e=>{e.stopPropagation();saveGame(true);});
+$('ldBtn').addEventListener('click',()=>{const d=readSave();if(!d){toast('مفيش حفظ');return;}if(!confirm('تحمّل آخر حفظ وتفقد التقدم الحالي؟'))return;try{applySave(d);toggleSettings();toast('📂 اتحمّل الحفظ',2000);}catch(e){gameErr(e,'load');}});
+$('dlBtn').addEventListener('click',()=>{if(confirm('تمسح الحفظ نهائي؟')){try{localStorage.removeItem(SAVE_KEY);}catch(e){}$('svInfo').textContent='';$('contBtn').hidden=true;toast('اتمسح');}});
+$('exBtn').addEventListener('click',()=>{
+  const d=S.started?snapshot():readSave();if(!d){toast('مفيش حاجة تتصدّر');return;}
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(d)],{type:'application/json'}));a.download='cairo_save.json';document.body.appendChild(a);a.click();a.remove();
+});
+$('imBtn').addEventListener('click',()=>$('imFile').click());
+$('imFile').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!d||d.v!==1)throw new Error('ملف حفظ مش صالح');localStorage.setItem(SAVE_KEY,JSON.stringify(d));applySave(d);toast('⬆ اتستورد الحفظ',2200);$('svInfo').textContent='آخر حفظ: '+fmtDate(d.t);}catch(x){gameErr(x,'import');toast('الملف مش صالح');}};
+  r.readAsText(f);e.target.value='';
+});
+setInterval(()=>{if(S.started&&!S.dead&&!S.shopOpen)saveGame(false);},20000);
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&S.started&&!S.dead)saveGame(false);});
+
+
+/* ---------- v12: بنك الشعب + ATM + فيزا بنكية ---------- */
+function newBank(){return {reg:false,u:'',ph:'',pinh:'',bal:0,card:false,cardOn:true,cardNo:'',cardBlocked:false,tx:[],fail:0,lock:0,pinFail:0,day:-1,drawn:0};}
+S.bank=newBank();
+const hsh=s=>{let h=5381;for(const ch of s+'|بنك-الشعب')h=((h<<5)+h+ch.charCodeAt(0))>>>0;return h.toString(36);};
+const egp=n=>Math.floor(n).toLocaleString('en-US')+' ج.م';
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function btx(d,a){const B=S.bank;B.tx.unshift({d,a,t:$('clock').textContent});if(B.tx.length>20)B.tx.pop();}
+let bkMode='',bkSess=false;
+const bkEl=$('bkbox');
+function bkOpen(mode){
+  bkMode=mode;bkSess=false;S.bankUI=true;$('bankui').hidden=false;if(mode!=='app')S.shopOpen=true;
+  try{document.exitPointerLock();}catch(e){}
+  bkShow(mode==='atm'?'atm':'home');
+}
+function bkClose(){S.bankUI=false;$('bankui').hidden=true;bkSess=false;if(bkMode!=='app')S.shopOpen=false;bkMode='';}
+const _cs2=closeShop;closeShop=function(){if(S.bankUI)bkClose();_cs2();};
+const V=id=>{const e=bkEl.querySelector('#'+id);return e?e.value.trim():'';};
+const BTN=(a,t,alt,v)=>'<button data-a="'+a+'"'+(v!=null?' data-v="'+v+'"':'')+(alt?' class="alt"':'')+'>'+t+'</button>';
+function cardHTML(){const B=S.bank,n=B.cardNo;return '<div class="bkcard"><b>VISA</b><div style="font-size:12px;opacity:.8">فيزا بنكية · بنك الشعب</div><div style="margin:10px 0;font-size:17px">•••• •••• •••• '+esc(n.slice(-4))+'</div><div style="font-size:12px">'+esc(B.u.toUpperCase())+(B.cardBlocked?' · محظورة':B.cardOn?'':' · موقوفة')+'</div></div>';}
+function bkShow(scr,msg){
+  const B=S.bank,m='<div class="bn">'+(msg?esc(msg):'')+'</div>';let h='';
+  if(scr==='home'){scr=!B.reg?'reg':(!bkSess?'login':'dash');}
+  if(scr==='reg'){
+    h='<h3>🏦 بنك الشعب — فتح حساب</h3>'+m+'<input id="u" placeholder="اسم المستخدم" maxlength="16" autocomplete="off"><input id="p1" type="password" placeholder="كلمة مرور الحساب (6 حروف أو أكتر)"><input id="p2" type="password" placeholder="أكّد كلمة المرور"><input id="pin" type="password" inputmode="numeric" maxlength="4" placeholder="الرقم السري للفيزا (4 أرقام)"><div style="font-size:12px;color:#9fb">لازم بطاقة رقم قومي. افتكر كلمة المرور والرقم السري، مفيش استرجاع.</div><div class="bkb">'+BTN('reg','افتح الحساب')+BTN('x','إغلاق',1)+'</div>';
+  }else if(scr==='login'){
+    h='<h3>🏦 بنك الشعب — تسجيل الدخول</h3>'+m+'<input id="u" placeholder="اسم المستخدم" autocomplete="off"><input id="p" type="password" placeholder="كلمة المرور"><div class="bkb">'+BTN('login','دخول')+BTN('x','إغلاق',1)+'</div>';
+  }else if(scr==='dash'){
+    h='<h3>أهلاً '+esc(B.u)+'</h3>'+m+'<div class="bkrow"><span>رصيد الحساب</span><b>'+egp(B.bal)+'</b></div><div class="bkrow"><span>الكاش اللي معاك</span><b>'+egp(S.money)+'</b></div>'+(B.card?cardHTML():'');
+    if(bkMode!=='app')h+='<input id="amt" inputmode="numeric" placeholder="المبلغ"><div class="bkb">'+BTN('dep','إيداع')+BTN('wd','سحب')+'</div>';
+    h+='<div class="bkb">'+BTN('st','كشف الحساب',1)+(B.card?BTN('tog',B.cardOn?'إيقاف الفيزا':'تشغيل الفيزا',1)+(B.cardBlocked?BTN('unb','فك الحظر',1):''):BTN('visa','اطلب فيزا (50 ج.م)'))+BTN('sec','الأمان',1)+BTN('out','تسجيل خروج',1)+'</div>';
+  }else if(scr==='st'){
+    h='<h3>كشف الحساب</h3>'+(B.tx.length?B.tx.map(t=>'<div class="bkrow"><span>'+esc(t.d)+' <small>'+esc(t.t)+'</small></span><b style="color:'+(t.a<0?'#ff7a7a':'#5ee08f')+'">'+(t.a<0?'-':'+')+egp(Math.abs(t.a))+'</b></div>').join(''):'<div class="bn">مفيش حركات.</div>')+'<div class="bkb">'+BTN('back','رجوع',1)+'</div>';
+  }else if(scr==='sec'){
+    h='<h3>الأمان</h3>'+m+'<input id="op" type="password" placeholder="كلمة المرور الحالية"><input id="np" type="password" placeholder="كلمة مرور جديدة (اختياري)"><input id="npin" type="password" inputmode="numeric" maxlength="4" placeholder="رقم سري جديد (اختياري)"><div class="bkb">'+BTN('savesec','حفظ')+BTN('back','رجوع',1)+'</div>';
+  }else if(scr==='atm'){
+    if(!B.reg||!B.card)h='<h3>🏧 ATM بنك الشعب</h3><div class="bn">محتاج فيزا بنكية. افتح حساب واطلب الفيزا من أي فرع.</div><div class="bkb">'+BTN('x','خروج',1)+'</div>';
+    else if(B.cardBlocked||!B.cardOn)h='<h3>🏧 ATM بنك الشعب</h3>'+cardHTML()+'<div class="bn">'+(B.cardBlocked?'الفيزا محظورة. فكّها من الفرع أو التطبيق.':'الفيزا موقوفة. شغّلها من الفرع أو التطبيق.')+'</div><div class="bkb">'+BTN('x','خروج',1)+'</div>';
+    else h='<h3>🏧 ATM بنك الشعب</h3>'+cardHTML()+m+'<input id="apin" type="password" inputmode="numeric" maxlength="4" placeholder="ادخل الرقم السري"><div class="bkb">'+BTN('apin','إدخال')+BTN('x','إخراج الفيزا',1)+'</div>';
+  }else if(scr==='atm2'){
+    const q=[100,500,1000,2000].map(a=>BTN('aw',a,0,a)).join('');
+    h='<h3>🏧 اختار العملية</h3>'+m+'<div class="bkrow"><span>الرصيد</span><b>'+egp(B.bal)+'</b></div><div class="bkrow"><span>الحد اليومي المتبقي</span><b>'+egp(Math.max(0,5000-B.drawn))+'</b></div><div class="bkb">'+q+'</div><input id="amt" inputmode="numeric" placeholder="مبلغ تاني"><div class="bkb">'+BTN('awc','سحب')+BTN('adep','إيداع')+BTN('ast','آخر الحركات',1)+BTN('x','إنهاء',1)+'</div>';
+  }
+  bkEl.innerHTML=h;bkEl.dataset.s=scr;
+}
+function bkAmt(){const n=Math.floor(+V('amt'));return n>0?n:0;}
+function atmW(a){
+  const B=S.bank,day=Math.floor(S.t/720);if(B.day!==day){B.day=day;B.drawn=0;}
+  if(a<=0)return bkShow('atm2','اكتب مبلغ صحيح');if(a>B.bal)return bkShow('atm2','رصيدك مش كفاية');if(B.drawn+a>5000)return bkShow('atm2','عدّيت الحد اليومي (5,000 ج.م)');
+  B.bal-=a;B.drawn+=a;S.money+=a;btx('سحب ATM',-a);hudMoney();toast('🏧 سحبت '+egp(a),2000);bkShow('atm2','خد فلوسك: '+egp(a));
+}
+const ACT={
+  x:()=>bkClose(),back:()=>bkShow('dash'),
+  reg(){
+    const B=S.bank,u=V('u'),p1=V('p1'),p2=V('p2'),pin=V('pin');
+    if(!S.hasID)return bkShow('reg','محتاج بطاقة رقم قومي من المحكمة الأول');
+    if(u.length<3)return bkShow('reg','اسم المستخدم 3 حروف على الأقل');if(p1.length<6)return bkShow('reg','كلمة المرور 6 حروف على الأقل');
+    if(p1!==p2)return bkShow('reg','كلمتين المرور مش متطابقتين');if(!/^\d{4}$/.test(pin))return bkShow('reg','الرقم السري لازم 4 أرقام');
+    Object.assign(B,newBank(),{reg:true,u,ph:hsh(p1),pinh:hsh(pin+'p')});bkSess=true;toast('🏦 اتفتح حسابك في بنك الشعب',2400);feed('🏦 حد فتح حساب في بنك الشعب');bkShow('dash','حسابك جاهز. اطلب الفيزا لو عايز تسحب من ATM.');
+  },
+  login(){
+    const B=S.bank;if(performance.now()<B.lock)return bkShow('login','الحساب مقفول مؤقتاً، استنى شوية');
+    if(V('u')===B.u&&hsh(V('p'))===B.ph){B.fail=0;bkSess=true;return bkShow('dash');}
+    B.fail++;if(B.fail>=3){B.fail=0;B.lock=performance.now()+30000;return bkShow('login','3 محاولات غلط. الحساب اتقفل 30 ثانية');}
+    bkShow('login','بيانات الدخول غلط ('+B.fail+'/3)');
+  },
+  out(){bkSess=false;bkShow('login','اتسجّل خروجك');},
+  dep(){const B=S.bank,a=bkAmt();if(!a)return bkShow('dash','اكتب مبلغ صحيح');if(a>S.money)return bkShow('dash','الكاش اللي معاك مش كفاية');S.money-=a;B.bal+=a;btx('إيداع',a);hudMoney();bkShow('dash','اتودّع '+egp(a));},
+  wd(){const B=S.bank,a=bkAmt();if(!a)return bkShow('dash','اكتب مبلغ صحيح');if(a>B.bal)return bkShow('dash','رصيدك مش كفاية');B.bal-=a;S.money+=a;btx('سحب من الفرع',-a);hudMoney();bkShow('dash','سحبت '+egp(a));},
+  st:()=>bkShow('st'),sec:()=>bkShow('sec'),
+  visa(){const B=S.bank;if(B.bal<50)return bkShow('dash','رصيدك لازم يكون 50 ج.م على الأقل');B.bal-=50;B.card=true;B.cardOn=true;B.cardBlocked=false;B.pinFail=0;let n='4';for(let i=0;i<15;i++)n+=Math.floor(Math.random()*10);B.cardNo=n;btx('إصدار فيزا بنكية',-50);hudMoney();toast('💳 الفيزا البنكية اتصدرت',2400);bkShow('dash','فيزتك جاهزة. استخدم الرقم السري اللي عملته.');},
+  tog(){const B=S.bank;B.cardOn=!B.cardOn;bkShow('dash',B.cardOn?'الفيزا اتشغّلت':'الفيزا اتوقفت');},
+  unb(){const B=S.bank;B.cardBlocked=false;B.pinFail=0;bkShow('dash','الحظر اتفك');},
+  savesec(){
+    const B=S.bank,op=V('op'),np=V('np'),npin=V('npin');
+    if(hsh(op)!==B.ph)return bkShow('sec','كلمة المرور الحالية غلط');
+    if(np&&np.length<6)return bkShow('sec','كلمة المرور الجديدة 6 حروف على الأقل');if(npin&&!/^\d{4}$/.test(npin))return bkShow('sec','الرقم السري 4 أرقام');
+    if(np)B.ph=hsh(np);if(npin)B.pinh=hsh(npin+'p');bkShow('dash','اتحفظ التغيير');
+  },
+  apin(){
+    const B=S.bank;if(hsh(V('apin')+'p')===B.pinh){B.pinFail=0;bkSess=true;return bkShow('atm2');}
+    B.pinFail++;if(B.pinFail>=3){B.cardBlocked=true;return bkShow('atm','3 محاولات غلط. الفيزا اتحظرت');}
+    bkShow('atm','الرقم السري غلط ('+B.pinFail+'/3)');
+  },
+  aw(v){atmW(+v);},awc(){atmW(bkAmt());},
+  adep(){const B=S.bank,a=bkAmt();if(!a)return bkShow('atm2','اكتب مبلغ صحيح');if(a>S.money)return bkShow('atm2','الكاش مش كفاية');S.money-=a;B.bal+=a;btx('إيداع ATM',a);hudMoney();bkShow('atm2','اتودّع '+egp(a));},
+  ast(){const B=S.bank;bkShow('atm2','آخر حركات: '+(B.tx.slice(0,3).map(t=>t.d+' '+(t.a<0?'-':'+')+Math.abs(t.a)).join(' | ')||'مفيش'));}
+};
+bkEl.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const f=ACT[b.dataset.a];if(f)f(b.dataset.v);});
+bkEl.addEventListener('keydown',e=>{if(e.key==='Enter'){const s=bkEl.dataset.s;const m={reg:'reg',login:'login',atm:'apin'}[s];if(m)ACT[m]();}});
+// فروع بنك الشعب (في كل المحافظات) وماكينات ATM
+{
+  const mkBank=(id,x,z,reg)=>{
+    bxm(18,8,11,0xf1efe6,x,4,z);bxm(19,.7,12,0x1c7a45,x,8.3,z);
+    for(let k=-3;k<=3;k++)cyl(.45,.45,7,0xffffff,x+k*2.4,3.5,z+5.8,8);
+    bxm(8,.3,3,0xdddddd,x,.15,z+7.5,false);
+    signPlane('بنك الشعب','#0b5d2f','#ffffff',16,2.6,x,8.6,z+6.3,0);
+    addColliderRange(x-9,z-5.5,x+9,z+5.5,9);
+    const p=addPlace(id,x,z+10,'بنك الشعب - '+reg,0x35d07f);p.sp.own='بنك الشعب';return p;
+  };
+  const BR=[['bank_alex',blockX(4)+32,blockZ(1)+32,'الإسكندرية'],['bank_cairo',blockX(7)+32,blockZ(10)+12,'وسط القاهرة'],['bank_giza',blockX(15)+32,blockZ(9)+32,'الجيزة'],['bank_luxor',blockX(15)+32,blockZ(7)+32,'الأقصر وأسوان'],['bank_delta',blockX(8)+32,blockZ(15)+32,'الدلتا'],['bank_siwa',blockX(0)+32,blockZ(6)+32,'واحة سيوة'],['bank_maadi',blockX(3)+32,blockZ(12)+32,'المعادي والتجمع']];
+  const brs=BR.map(b=>mkBank(b[0],b[1],b[2],b[3]));
+  let an=0;
+  const mkATM=(x,z)=>{
+    bxm(1.2,2.3,.9,0x3b4552,x,1.15,z);bxm(.9,.6,.05,0x35d07f,x,1.7,z+.47,false);bxm(1.3,.3,1,0x1f8a4c,x,2.45,z);
+    signPlane('ATM','#0b5d2f','#ffffff',1.6,.5,x,2.8,z+.52,0);addColliderRange(x-.7,z-.5,x+.7,z+.5,2.5);
+    const p=addPlace('atm'+(an++),x,z+2.3,'ATM بنك الشعب',0x35d07f);p.sp.own='ATM';
+  };
+  for(const p of brs)mkATM(p.x+12,p.z-2.5);
+  for(const id of['court','gym','metro','stA','stB','airport','gas1','gas2','gas3','jobs','dealer','police','cafe','shop']){const q=places.find(w=>w.id===id);if(q)mkATM(q.x+6,q.z+1);}
+}
+const _up5=usePlace;
+usePlace=function(p){
+  if(p.id.indexOf('bank')===0){bkOpen('branch');return;}
+  if(p.id.indexOf('atm')===0){bkOpen('atm');return;}
+  _up5(p);
+};
+
 /* ---------- main loop ---------- */
 let last=performance.now(),mapT=0;
 function frame(now){
   requestAnimationFrame(frame);
   let dt=Math.min(.05,(now-last)/1000);last=now;dt=focusDt(dt);
   if(S.started&&!S.shopOpen&&!S.phoneOpen&&!S.setOpen){
+   try{
     S.t+=dt;readInput();
-    updPlayer(dt);updCars(dt);updHumans(dt);updGangs(dt);updTask(dt);updBust(dt);updHeli(dt);updRent(dt);updClock(dt);updFx(dt);updWaypoint(dt);updProjs(dt);updPickups(dt);manage(dt);updParts(dt);updFood(dt);updAssist(dt);updRegion(dt);updAir(dt);updCP(dt);updRail(dt);updExtra(dt);updFuel(dt);updPhys(dt);updPol(dt);updGfx(dt);
+    updPlayer(dt);updCars(dt);updHumans(dt);updGangs(dt);updTask(dt);updBust(dt);updHeli(dt);updRent(dt);updClock(dt);updFx(dt);updWaypoint(dt);updProjs(dt);updPickups(dt);manage(dt);updParts(dt);runHooks(dt);
     if(eng&&AC){const c=pl.car;eng.g.gain.value=c?.05+Math.min(.05,Math.abs(c.speed)*.002):0;eng.o.frequency.value=40+(c?Math.abs(c.speed)*3.2:0);}
     mapT+=dt;if(mapT>.05){mapT=0;drawMini();if(S.mapOpen&&((S.mapTick=(S.mapTick||0)+1)%10===0))drawBig();}
     updHud();
+   }catch(e){gameErr(e,'frame');}
   }
-  if(S.started){updCamera(dt);camExtras(dt);}else menuOrbit(dt);
-  renderFrame();
+  if(S.started){try{updCamera(dt);camExtras(dt);}catch(e){gameErr(e,'camera');}}else menuOrbit(dt);
+  try{renderFrame();}catch(e){gameErr(e,'render');}
 }
 
 /* ---------- init ---------- */
